@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+<h3 class="mb-3">My Orders</h3>
+
+{% if orders %}
+  <div class="vstack gap-3">
+    {% for o in orders %}
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="d-flex justify-content-between mb-2">
+          <div><strong>Order #{{ o.id }}</strong></div>
+          <div class="text-muted small">{{ o.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+        </div>
+        <div class="table-responsive">
+          <table class="table align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Product</th>
+                <th style="width:120px;">Price</th>
+                <th style="width:80px;">Qty</th>
+                <th style="width:140px;">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% set total = 0 %}
+              {% for it in o.items %}
+                {% set subtotal = it.quantity * it.price_at_purchase %}
+                {% set total = total + subtotal %}
+                <tr>
+                  <td>{{ it.product.name }}</td>
+                  <td>₹ {{ '%.2f'|format(it.price_at_purchase) }}</td>
+                  <td>{{ it.quantity }}</td>
+                  <td>₹ {{ '%.2f'|format(subtotal) }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+            <tfoot>
+              <tr>
+                <th colspan="3" class="text-end">Total</th>
+                <th>₹ {{ '%.2f'|format(total) }}</th>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+{% else %}
+<div class="text-center py-5">
+  <p class="text-muted">No orders yet.</p>
+  <a class="btn btn-primary" href="{{ url_for('index') }}">Start shopping</a>
+</div>
+{% endif %}
+{% endblock %}
